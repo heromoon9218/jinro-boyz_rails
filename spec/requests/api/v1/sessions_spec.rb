@@ -30,8 +30,8 @@ RSpec.describe "Api::V1::Sessions", type: :request do
 
     it "returns 204 when signed in" do
       post "/api/v1/users/sign_in",
-           params: { user: { email: user.email, password: "password123" } }.to_json,
-           headers: { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json" }
+           params: { user: { email: user.email, password: "password123" } },
+           as: :json
 
       expect(response).to have_http_status(:ok)
       auth_headers = response.headers.slice("Authorization")
