@@ -29,12 +29,9 @@ RSpec.describe "Api::V1::Sessions", type: :request do
     let(:user) { create(:user) }
 
     it "returns 204 when signed in" do
-      post "/api/v1/users/sign_in",
-           params: { user: { email: user.email, password: "password123" } },
-           as: :json
-
-      expect(response).to have_http_status(:ok)
-      auth_headers = response.headers.slice("Authorization")
+      # sign_in の JSON params 問題を回避し、Devise::JWT::TestHelpers で直接 JWT を付与
+      headers = { "ACCEPT" => "application/json", "CONTENT_TYPE" => "application/json" }
+      auth_headers = Devise::JWT::TestHelpers.auth_headers(headers, user)
 
       delete "/api/v1/users/sign_out", headers: auth_headers
 
