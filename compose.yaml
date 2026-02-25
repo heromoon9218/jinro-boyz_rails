@@ -1,0 +1,45 @@
+services:
+  api:
+    container_name: jinro-boyz-rails-api
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bin/rails s -b 0.0.0.0
+    environment:
+      DATABASE_URL: mysql2://jinro_boyz:jinro_boyz@mysql:3306/jinro_boyz_rails_development
+      RAILS_ENV: development
+    depends_on:
+      mysql:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+  mysql:
+    container_name: jinro-boyz-rails-mysql
+    image: mysql:8.4.8
+    environment:
+      MYSQL_ROOT_PASSWORD: jinro_boyz
+      MYSQL_DATABASE: jinro_boyz_rails_development
+      MYSQL_USER: jinro_boyz
+      MYSQL_PASSWORD: jinro_boyz
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pjinro_boyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    container_name: jinro-boyz-rails-redis
+    image: redis:8.6-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:

@@ -1,0 +1,8 @@
+.git
+.gitignore
+.dockerignore
+*.md
+.cursor
+tmp
+log
+*.log
