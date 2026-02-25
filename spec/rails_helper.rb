@@ -48,8 +48,14 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     DatabaseCleaner.url_allowlist = [ ENV["DATABASE_URL"] ] if ENV["DATABASE_URL"]
-    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each) do |example|
+    # Request specs need truncation: the HTTP request runs in a different DB connection
+    # and cannot see uncommitted data from :transaction strategy.
+    strategy = example.metadata[:type] == :request ? :truncation : :transaction
+    DatabaseCleaner.strategy = strategy
   end
 
   config.around(:each) do |example|
