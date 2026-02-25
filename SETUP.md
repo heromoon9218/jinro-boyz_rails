@@ -78,12 +78,12 @@ bin/rails s
 ## 8. テスト実行
 
 ```bash
-# MySQL を起動してから
-docker compose up -d mysql
+# api を起動（mysql も depends_on で起動する）
+docker compose up -d api
 
 # テスト用 DB の作成（初回のみ）
 docker compose exec mysql mysql -uroot -pjinro_boyz -e "CREATE DATABASE IF NOT EXISTS jinro_boyz_rails_test; GRANT ALL ON jinro_boyz_rails_test.* TO 'jinro_boyz'@'%'; FLUSH PRIVILEGES;"
 
-# RSpec の実行
-docker compose run --no-deps -e RAILS_ENV=test -e DATABASE_URL=mysql2://jinro_boyz:jinro_boyz@mysql:3306/jinro_boyz_rails_test api bundle exec rspec
+# RSpec の実行（既存コンテナを再利用するため exec を使用）
+docker compose exec -e RAILS_ENV=test -e DATABASE_URL=mysql2://jinro_boyz:jinro_boyz@mysql:3306/jinro_boyz_rails_test api bundle exec rspec
 ```
