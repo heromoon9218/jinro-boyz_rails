@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+echo "==> Installing Ruby dependencies..."
+bundle install
+
+echo "==> Starting Docker services (MySQL, Redis)..."
+docker compose up -d mysql redis
+
+echo "==> Waiting for MySQL to be ready..."
+for i in $(seq 1 30); do
+  docker compose exec mysql mysqladmin ping -h localhost --silent 2>/dev/null && break
+  sleep 1
+done
+
+echo "==> Setting up database..."
+bin/rails db:create db:migrate 2>/dev/null || bin/rails db:migrate
+
+echo "==> Rails worktree ready!"
