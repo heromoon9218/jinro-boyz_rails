@@ -36,3 +36,6 @@
 
 # Ignore Cursor IDE project settings
 /.cursor
+
+# cmux worktrees
+.worktrees/
